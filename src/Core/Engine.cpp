@@ -5,6 +5,7 @@
 #include "Core/Engine.h"
 #include "Core/Error.h"
 #include "GLFW/glfw3.h"
+#include <iostream>
 
 Engine::Engine(): mrunning(true)
 {

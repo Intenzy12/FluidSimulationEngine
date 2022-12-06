@@ -1,6 +1,8 @@
 #pragma once
-
+#include <functional>
 #include <string>
+#include <GLFW/glfw3.h>
+
 enum class EventType
 {
 	WindowExit = 1 << 0,
@@ -14,10 +16,30 @@ enum class EventType
 class Event
 {
 public:
-	virtual EventType GetType() = 0;
-	virtual std::string GetName() = 0;
+	Event(GLFWwindow* window, EventType type, std::function<void()> imguiFunc): mwindow(window), mtype(type), mimguiFunc(imguiFunc) {}
 
-	virtual std::string ToString() {
+	virtual ~Event() = 0;
+
+	inline virtual std::string GetName() = 0;
+
+	inline virtual std::string ToString() {
 		return GetName();
 	}
+
+	inline virtual EventType GetType()
+	{
+		return mtype;
+	}
+
+	inline virtual std::function<void()> GetImGuiFunction() {
+		return mimguiFunc;
+	}
+
+	inline GLFWwindow* GetWindowHandle() { return mwindow; }
+
+protected:
+	GLFWwindow* mwindow;
+	EventType mtype;
+	std::function<void()> mimguiFunc;
 };
+

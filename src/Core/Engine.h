@@ -9,8 +9,12 @@ public:
 	~Engine();
 	
 	void run();
+
+	static Engine* GetInstance() { return minstance; }
+
+	GLFWwindow* GetWindowHandle() { return mwindow; }
 private:
-	Engine* minstance;
+	static Engine* minstance;
 	bool mrunning;
 	GLFWwindow* mwindow;
 
