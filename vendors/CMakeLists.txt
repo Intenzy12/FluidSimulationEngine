@@ -6,6 +6,8 @@ option(GLFW_BUILD_TESTS OFF)
 option(GLFW_BUILD_EXAMPLES OFF)
 add_subdirectory(${PROJECT_SOURCE_DIR}/glfw/)
 
+add_subdirectory(${PROJECT_SOURCE_DIR}/glm)
+
 file(GLOB GLAD_SOURCES ${PROJECT_SOURCE_DIR}/glad/src/glad.c)
 file(GLOB GLAD_HEADERS ${PROJECT_SOURCE_DIR}/glad/include/*.h)
 add_library(glad ${GLAD_SOURCES} ${GLAD_HEADERS})

@@ -9,3 +9,6 @@
 	path = vendors/imgui
 	url = https://www.github.com/ocornut/imgui
 	branch = docking
+[submodule "vendors/glm"]
+	path = vendors/glm
+	url = https://www.github.com/g-truc/glm

@@ -19,7 +19,8 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 include_directories(${PROJECT_SOURCE_DIR}/src/
 	${PROJECT_SOURCE_DIR}/vendors/glfw/include/
 	${PROJECT_SOURCE_DIR}/vendors/glad/include/
-	${PROJECT_SOURCE_DIR}/vendors/imgui/)
+	${PROJECT_SOURCE_DIR}/vendors/imgui/
+	${PROJECT_SOURCE_DIR}/vendors/glm/)
 
 add_subdirectory(${PROJECT_SOURCE_DIR}/vendors)
 

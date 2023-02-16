@@ -7,6 +7,8 @@
 #include "GLFW/glfw3.h"
 #include <iostream>
 
+Engine* Engine::minstance = NULL;
+
 Engine::Engine(): mrunning(true)
 {
 	minstance = this;

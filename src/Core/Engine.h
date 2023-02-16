@@ -1,5 +1,6 @@
 #pragma once
-
+#include "Core/Events/UserEvents.h"
+#include "Core/Events/WindowEvents.h"
 #include <GLFW/glfw3.h>
 
 class Engine

@@ -1,101 +1,140 @@
-#pragma once
 #include "Core/Events/Events.h"
-#include <GLFW/glfw3.h>
-#include <backends/imgui_impl_glfw.h>
 #include <sstream>
 
-class MouseButtonEvent : Event
+//Key event parent class
+class KeyEvent: public Event
 {
 public:
-	MouseButtonEvent(GLFWwindow* window, int button, int action, int mods):
-		Event(window, EventType::MouseButton, std::bind(ImGui_ImplGlfw_MouseButtonCallback, window, button, action, mods)),
-		mbutton(button), maction(action), mmods(mods) {}
+    inline int GetKeyCode() const { return m_KeyCode; }
 
-	inline virtual std::string GetName() override { return "Mouse Button"; }
-
-	inline virtual std::string ToString() override
-	{
-		std::stringstream ss;
-		ss << "Mouse Button (button: " << mbutton << ", action: " << maction << ", mods: " << mmods << ")";
-		return ss.str();
-	}
-
-	inline int GetButton() { return mbutton; }
-
-	inline int GetAction() { return maction; }
-
-	inline int GetMods() { return mmods; }
-
-private:
-		int mbutton, maction, mmods;
-
+    EVENT_CLASS_CATEGORY(EventCategoryKey | EventCategoryInput)
+protected:
+    KeyEvent(int keyCode): m_KeyCode(keyCode) {}
+    int m_KeyCode;
 };
 
-class MouseScrollEvent : Event 
+//Key pressed event class
+class KeyPressed: public KeyEvent
 {
 public:
-	MouseScrollEvent(GLFWwindow* window, double xoffset, double yoffset): 
-		Event(window, EventType::MouseScroll, std::bind(ImGui_ImplGlfw_ScrollCallback, window, xoffset, yoffset)),
-		mxoffset(xoffset), myoffset(yoffset) {}
-	
-	inline virtual std::string GetName() override { return "Mouse Scroll"; }
+    KeyPressed(int keyCode, int repeat): KeyEvent(keyCode), m_Repeat(repeat) {}
 
-	inline virtual std::string ToString() override
-	{
-		std::stringstream ss;
-		ss << "Mouse Scroll (xoffset: " << mxoffset << ", yoffset: " << myoffset << ")";
-		return ss.str();
-	}
+    inline int GetRepeat() const { return m_Repeat; }
 
-	inline double GetXOffset() { return mxoffset; }
-	
-	inline double GetYOffset() { return myoffset; }
+    EVENT_CLASS_TYPE(KeyPressedEvent)
+
+    std::string ToString() const override
+    {
+        std::stringstream ss;
+        ss << "KeyPressed: " << m_KeyCode << " (repeats " << m_Repeat << ")";
+        return ss.str();
+    }
 private:
-	double mxoffset, myoffset;
+    int m_Repeat;
 };
 
-class CursorPosEvent : Event
+//Key released event class
+class KeyReleased: public KeyEvent
 {
 public:
-	CursorPosEvent(GLFWwindow* window, double xPos, double yPos): 
-		Event(window, EventType::CursorPos, std::bind(ImGui_ImplGlfw_CursorPosCallback, window, xPos, yPos)),
-		mXPos(xPos), mYPos(yPos) {}
-	
-	inline virtual std::string GetName() override { return "Cursor Position"; }
+    KeyReleased(int keyCode): KeyEvent(keyCode) {}
 
-	inline virtual std::string ToString() override {
-		std::stringstream ss;
-		ss << "Cursor Position (xpos: " << mXPos << ", ypos: " << mYPos << ")";
-		return ss.str();
-	}
+    EVENT_CLASS_TYPE(KeyReleasedEvent)
 
-	inline double GetXPos() { return mXPos; }
-
-	inline double GetYPos() { return mYPos; }
-private:
-	double mXPos, mYPos;
+    std::string ToString() const override
+    {
+        std::stringstream ss;
+        ss << "KeyReleased: " << m_KeyCode;
+        return ss.str();
+    }
 };
 
-class KeyEvent : Event
+//Mouse moved event class
+class MouseMoved: public Event
+{
+public:
+    MouseMoved(float xPos, float yPos): m_XPos(xPos), m_YPos(yPos) {}
+
+    inline float GetXPos() const { return m_XPos; }
+    inline float GetYPos() const { return m_YPos; }
+
+    EVENT_CLASS_TYPE(MouseMovedEvent)
+
+    EVENT_CLASS_CATEGORY(EventCategoryMouse | EventCategoryInput)
+
+    std::string ToString() const override 
+    {
+        std::stringstream ss;
+        ss << "MouseMoved: " << m_XPos << ", " << m_YPos;
+        return ss.str();
+    }
+private:
+    float m_XPos;
+    float m_YPos;
+};
+
+//Mouse button event parent class
+class MouseButtonEvent: public Event
 {
 public: 
-	KeyEvent (GLFWwindow* window, int key, int scancode, int action, int mods): 
-		Event(window, EventType::Key, std::bind(ImGui_ImplGlfw_KeyCallback, window, key, scancode, action, mods)),
-		mkey(key), mscancode(scancode), maction(action), mmods(mods) {}
+    inline int GetButtonCode() const { return m_ButtonCode; }
 
-	inline virtual std::string GetName() override { return "Key Event"; }
+    EVENT_CLASS_CATEGORY(EventCategoryInput | EventCategoryMouseButton | EventCategoryMouse)
+protected:
+    MouseButtonEvent(int buttonCode): m_ButtonCode(buttonCode) {}
+    int m_ButtonCode;
+};
 
-	inline virtual std::string ToString() override {
-		std::stringstream ss;
-		ss << "Key Event (key: " << mkey << ", scancode: " << mscancode << ", action: " << maction << ", mods: " << mmods << ")";
-		return ss.str();
-	}
+//Mouse button pressed event class
+class MouseButtonPressed: public MouseButtonEvent
+{
+public:
+    MouseButtonPressed(int buttonCode): MouseButtonEvent(buttonCode) {}
 
-	inline int GetKey() { return mkey; }
-	inline int GetScancode() {return mscancode; }
-	inline int GetAction() { return maction; } 
-	inline int GetMods() { return mmods; }
+    EVENT_CLASS_TYPE(MouseButtonPressedEvent)
 
+    std::string ToString() const override
+    {
+        std::stringstream ss;
+        ss << "MouseButtonPressed: " << m_ButtonCode;
+        return ss.str();
+    }
+};
+
+//Mouse button released event class
+class MouseButtonReleased: public MouseButtonEvent
+{
+public:
+    MouseButtonReleased(int buttonCode): MouseButtonEvent(buttonCode) {}
+
+    EVENT_CLASS_TYPE(MouseButtonReleasedEvent)
+
+    std::string ToString() const override
+    {
+        std::stringstream ss;
+        ss << "MouseButtonReleased: " << m_ButtonCode;
+        return ss.str();
+    }
+};
+
+class SerialInput: public Event
+{
+public:
+    SerialInput(const char* buffer, int size): m_Buffer(buffer), m_Size(size) {}
+
+    inline const char* const GetBuffer() const { return m_Buffer; }
+    inline int GetSize() const { return m_Size; }
+
+    EVENT_CLASS_TYPE(SerialInputEvent)
+    EVENT_CLASS_CATEGORY(EventCategorySerial)
+
+    std::string ToString() const override
+    {
+        std::stringstream ss;
+        ss << "SerialInput: " << m_Buffer << " (size: " << m_Size << ")";
+        return ss.str();
+    }
 private:
-	int mkey, mscancode, maction, mmods;
+    const char* m_Buffer;
+    int m_Size;
 };

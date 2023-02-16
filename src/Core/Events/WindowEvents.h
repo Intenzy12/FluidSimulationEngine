@@ -1,34 +1,61 @@
-#pragma once
 #include "Core/Events/Events.h"
 #include <sstream>
-#include <backends/imgui_impl_glfw.h>
-#include "Core/Engine.h"
 
-class WindowResizeEvent : Event 
+//Window moved event class
+class WindowMoved: public Event
 {
 public:
-	WindowResizeEvent(GLFWwindow* window, int width, int height): Event(window, EventType::WindowResize, NULL), mwidth(width), mheight(height) {}
+    WindowMoved(int xPos, int yPos): m_XPos(xPos), m_YPos(yPos) {}
 
-	inline virtual std::string ToString() override {
-		std::stringstream ss;
-		ss << "Window Resize (Width: " << mwidth << ", Height: " << mheight << ')';
-		return ss.str();
-	}
+    inline int GetXPos() const { return m_XPos; }
+    inline int GetYPos() const { return m_YPos; } 
 
-	inline virtual std::string GetName() override {
-		return "Window Resize";
-	}
+    EVENT_CLASS_CATEGORY(EventCategoryApplication)
 
-	inline int GetWidth() { return mwidth; };
-	inline int GetHeight() { return mheight; };
+    EVENT_CLASS_TYPE(WindowMovedEvent)
+
+    std::string ToString() const override 
+    {
+        std::stringstream ss;
+        ss << "WindowMoved: " << m_XPos << ", " << m_YPos;
+        return ss.str();
+    }
 private:
-	int mwidth, mheight;
+    int m_XPos;
+    int m_YPos;
 };
 
-class WindowExitEvent : Event
+//Window resized event class
+class WindowResized: public Event
 {
-public: 
-	WindowExitEvent(GLFWwindow* window): Event(window, EventType::WindowExit, NULL) {}
+public:
+    WindowResized(int width, int height): m_Width(width), m_Height(height) {}
 
-	inline virtual std::string GetName() override { return "Window Exit"; }
+    inline int GetXPos() const { return m_Width; }
+    inline int GetYPos() const { return m_Height; } 
+
+    EVENT_CLASS_CATEGORY(EventCategoryApplication)
+
+    EVENT_CLASS_TYPE(WindowResizedEvent)
+
+    std::string ToString() const override 
+    {
+        std::stringstream ss;
+        ss << "WindowResized: " << m_Width << ", " << m_Height;
+        return ss.str();
+    }
+private:
+    int m_Width;
+    int m_Height;
+};
+
+//Window closed event class
+class WindowClosed: public Event
+{
+public:
+    WindowClosed() {}
+
+    EVENT_CLASS_CATEGORY(EventCategoryApplication)
+
+    EVENT_CLASS_TYPE(WindowClosedEvent)
 };

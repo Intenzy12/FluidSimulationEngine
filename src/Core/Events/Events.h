@@ -1,45 +1,92 @@
 #pragma once
+#define BIT(x) (1 << x)
+#include <iostream>
 #include <functional>
-#include <string>
-#include <GLFW/glfw3.h>
 
+//The event system will work by creating a class for every event that will be instanced when the event takes place
+//each event class will have different parameters which can then be accesed
+//some of the parameters will be part of all events (such as the event type and category flags)
+//however other parameters will be exclusive to that certain type of event (such as the mouse position in the mouse moved event)
+//the reason why this is better than just getting information straight from an api
+//is because this abstracts everything in such a way so that I could change the api rather easilly
+//this is very helpfull especially if I want to keep this cross platform
+
+//Event Type that each event will have
 enum class EventType
 {
-	WindowExit = 1 << 0,
-	WindowResize = 1 << 1,
-	MouseButton = 1 << 2,
-	CursorPos = 1 << 3,
-	MouseScroll = 1 << 4,
-	Key = 1 << 5
+    None = 0,
+    KeyPressedEvent, KeyReleasedEvent,
+    MouseMovedEvent, MouseButtonPressedEvent, MouseButtonReleasedEvent,
+    WindowClosedEvent, WindowResizedEvent, WindowMovedEvent,
+    SerialInputEvent
 };
 
+//Event Category that each event will have
+enum EventCategory
+{
+    //Each event category is set to a different bit so that an int can express multiple event categories
+    None = 0,
+    EventCategoryKey = BIT(0),
+    EventCategoryMouse = BIT(1),
+    EventCategoryMouseButton = BIT(2),
+    EventCategorySerial = BIT(3),
+    EventCategoryInput = BIT(4),
+    EventCategoryApplication = BIT(5)
+};
+
+//Macros just so I don't have to retype the following a thousand times
+#define EVENT_CLASS_TYPE(type) static EventType GetStaticType() { return EventType::type; }\
+                                EventType GetEventType() const override { return GetStaticType(); }\
+                                const char* GetName() const override { return #type; }
+                                
+#define EVENT_CLASS_CATEGORY(category) int GetCategoryFlags() const override { return category; }
+
+//Abstract Event Parent Class
 class Event
 {
 public:
-	Event(GLFWwindow* window, EventType type, std::function<void()> imguiFunc): mwindow(window), mtype(type), mimguiFunc(imguiFunc) {}
+    virtual ~Event() = default;
 
-	virtual ~Event() = 0;
+    //All events should have the following
+    virtual EventType GetEventType() const = 0;
+    virtual int GetCategoryFlags() const = 0;
+    virtual const char* GetName() const = 0;
+    virtual std::string ToString() const { return GetName(); }
 
-	inline virtual std::string GetName() = 0;
+    bool IsCategory(int category) const { return category & GetCategoryFlags(); }
 
-	inline virtual std::string ToString() {
-		return GetName();
-	}
-
-	inline virtual EventType GetType()
-	{
-		return mtype;
-	}
-
-	inline virtual std::function<void()> GetImGuiFunction() {
-		return mimguiFunc;
-	}
-
-	inline GLFWwindow* GetWindowHandle() { return mwindow; }
-
-protected:
-	GLFWwindow* mwindow;
-	EventType mtype;
-	std::function<void()> mimguiFunc;
+private:
+    bool m_Handled = false;
+    friend class Dispatcher;
 };
 
+//The dispatcher is a class that is very helpfull because it will allow me to pass in functions
+//which will only be called if the event type is the same as what is needed for the function
+class Dispatcher
+{
+    template<typename T>
+    using EventFn = std::function<bool(T&)>;
+public:
+    Dispatcher(Event& event): m_Event(event) {}
+
+    //Dispatch will only call the function given if the event type matches that of the function
+    template<typename T>
+    bool Dispatch(EventFn<T> EventFunction)
+    {
+        if(m_Event.GetEventType() == T::GetStaticType() && !m_Event.m_Handled)
+        {
+            m_Event.m_Handled = EventFunction(*(T*)&m_Event);
+            return true;
+        }
+
+        return false;
+    }
+private:
+    Event& m_Event;
+};
+
+//For debuging convinience
+inline std::ostream& operator<<(std::ostream& stream, const Event& event)
+{
+    return stream << event.ToString();
+}
