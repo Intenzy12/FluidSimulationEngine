@@ -56,7 +56,7 @@ void Shader::compileShader(std::string filePath, int id)
     std::string line;
     while(std::getline(file, line))
     {
-        contents += line;
+        contents += line + '\n';
     }
     const char* fileContentsPtr = contents.c_str();
     glShaderSource(id, 1, &fileContentsPtr, NULL);

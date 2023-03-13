@@ -4,6 +4,7 @@
 #include <backends/imgui_impl_glfw.h>
 #include "Core/Engine.h"
 #include "Core/Error.h"
+#include "Core/Graphics/Shader.h"
 #include "GLFW/glfw3.h"
 #include <iostream>
 
@@ -27,8 +28,12 @@ void Engine::run()
 {
 	initGlfw();
 	initImGui();
+	shader = new Shader("shaders/basic.vert", "shaders/basic.frag");
+	plane = new Plane(1, 0);
 	loop();
 	terminate();
+	delete plane; 
+	delete shader;
 }
 
 void Engine::initGlfw()
@@ -74,14 +79,15 @@ void Engine::loop()
 		glfwPollEvents();
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		
-		ImGui_ImplGlfw_NewFrame();
-		ImGui_ImplOpenGL3_NewFrame();
-		ImGui::NewFrame();
+		/* ImGui_ImplGlfw_NewFrame(); */
+		/* ImGui_ImplOpenGL3_NewFrame(); */
+		/* ImGui::NewFrame(); */
 
-		ImGui::ShowDemoWindow();
+		shader->UseShader();
+		plane->draw();
 
-		ImGui::Render();
-		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+		/* ImGui::Render(); */
+		/* ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData()); */
 
 		glfwSwapBuffers(mwindow);
 		mrunning = !glfwWindowShouldClose(mwindow);

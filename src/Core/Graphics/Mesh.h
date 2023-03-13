@@ -3,6 +3,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <vector>
+#include <iostream>
 
 struct Vertex {
     glm::vec3 Position;
@@ -22,6 +23,7 @@ public:
 	void SetIndices(std::vector<unsigned int>);
 	void SetData(std::vector<Vertex>, std::vector<unsigned int>);
 	void Draw();
+	void Init();
 
 private:
 	GLuint VAOid;
