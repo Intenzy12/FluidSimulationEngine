@@ -1,6 +1,9 @@
 #pragma once
 #include "Core/Graphics/Mesh.h"
 
+std::ostream& operator<<(std::ostream& s, Vertex v);
+std::ostream& operator<<(std::ostream& s, std::vector<Vertex> v);
+
 class Element 
 {
 public:

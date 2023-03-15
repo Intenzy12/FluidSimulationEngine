@@ -59,7 +59,7 @@ void Plane::init() {
 		}
 	}
 	
-	std::cout << indices << '\n';
+	std::cout << vertices << '\n';
 
 	mMesh.SetData(vertices, indices);
 }

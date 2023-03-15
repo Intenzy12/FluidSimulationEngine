@@ -22,6 +22,8 @@ void Camera::setPosition(const glm::vec3& ivec)
 {
 	position = ivec;
 
+	polarPosition = {0.0, 0.0, 0.0};
+
 	setRotation();
 }
 
@@ -39,6 +41,8 @@ void Camera::setPolarPosition(const glm::vec3& ivec)
 	position.x = ivec.z * cos(ivec.x) * sin(ivec.y);
 	position.y = ivec.z * sin(ivec.x) * sin(ivec.y);
 	position.z = ivec.z * cos(ivec.y);
+
+	polarPosition = ivec;
 
 	setRotation();
 }
