@@ -15,6 +15,7 @@ public:
 	static void setPolarPosition(const glm::vec3& ivec);
 	static void setRotation();
 
+	static void update();
 private:
 	static glm::mat4 projection;
 	static glm::mat4 translate;
@@ -24,4 +25,6 @@ private:
 	static float fov;
 	static float nearPlane;
 	static float farPlane;
+
+	static int shaderId;
 };

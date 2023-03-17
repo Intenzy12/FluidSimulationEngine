@@ -1,6 +1,7 @@
 #include "Core/Graphics/Camera.h"
 #include "Core/Engine.h"
 #include "Core/MathConstants.h"
+#include "Core/Graphics/ShaderManager.h"
 #include <math.h>
 
 glm::mat4 Camera::projection = glm::mat4();
@@ -10,13 +11,18 @@ glm::vec3 Camera::polarPosition = glm::vec3();
 float Camera::fov = PI_F15 * 0.5f;
 float Camera::nearPlane = 0.1f; 
 float Camera::farPlane = 100.0f;
+int Camera::shaderId = -1;
 
 void Camera::init()
 {
 	const Engine::WindowData& windowData = Engine::GetInstance()->GetWindowData();
 	float aspectRatio = windowData.width / windowData.height;
 	projection = glm::perspective(fov, aspectRatio, nearPlane, farPlane);
+	setPosition({0.0f, 0.0f, 0.99f});
+	shaderId = ShaderManager::LoadShader("basic");
 }
+
+
 
 void Camera::setPosition(const glm::vec3& ivec)
 {
@@ -45,4 +51,11 @@ void Camera::setPolarPosition(const glm::vec3& ivec)
 	polarPosition = ivec;
 
 	setRotation();
+}
+
+void Camera::update()
+{
+	ShaderManager::UseShader(shaderId)
+		.SetUniformMatrix4fv("transform", translate)
+		.SetUniformMatrix4fv("projection", projection);
 }

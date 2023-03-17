@@ -1,6 +1,9 @@
 #include "Core/Graphics/Shader.h"
 #include <iostream>
 #include <fstream>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 Shader::Shader(std::string vertFilePath, std::string fragFilePath): m_ProgramId(0), m_VertId(0), m_FragId(0)
 {
@@ -12,6 +15,13 @@ Shader::~Shader()
     glDeleteShader(m_VertId);
     glDeleteShader(m_FragId);
     glDeleteProgram(m_ProgramId);
+}
+
+Shader& Shader::SetUniformMatrix4fv(std::string name, const glm::mat4& data)
+{
+	int location = glGetUniformLocation(m_ProgramId, name.c_str());
+	glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(data));
+	return *this;
 }
 
 void Shader::loadShader(std::string vertFilePath, std::string fragFilePath)

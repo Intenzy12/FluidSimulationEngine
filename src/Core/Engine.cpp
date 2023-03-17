@@ -4,7 +4,8 @@
 #include <backends/imgui_impl_glfw.h>
 #include "Core/Engine.h"
 #include "Core/Error.h"
-#include "Core/Graphics/Shader.h"
+#include "Core/Graphics/Camera.h"
+#include "Core/Graphics/ShaderManager.h"
 #include "GLFW/glfw3.h"
 #include <iostream>
 
@@ -28,12 +29,12 @@ void Engine::run()
 {
 	initGlfw();
 	initImGui();
-	shader = new Shader("shaders/basic.vert", "shaders/basic.frag");
+	Camera::init();
 	plane = new Plane(1, 0);
 	loop();
+	ShaderManager::Terminate();
 	terminate();
 	delete plane; 
-	delete shader;
 }
 
 void Engine::initGlfw()
@@ -83,7 +84,7 @@ void Engine::loop()
 		/* ImGui_ImplOpenGL3_NewFrame(); */
 		/* ImGui::NewFrame(); */
 
-		shader->UseShader();
+		Camera::update();
 		plane->draw();
 
 		/* ImGui::Render(); */

@@ -32,8 +32,6 @@ private:
 	WindowData mwindowdata;
 	Plane* plane;
 
-	Shader* shader;
-	
 	void initGlfw();
 	void initImGui();
 	void initEvents();
